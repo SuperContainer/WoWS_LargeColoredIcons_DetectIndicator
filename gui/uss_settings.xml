@@ -1,0 +1,11 @@
+<uss_settings.xml>
+  <default>
+	<xmlfile>../unbound/styles.xml</xmlfile>
+	<xmlfile>../unbound/markup.xml</xmlfile>
+	<swffile>USSExpressions.swf</swffile>
+  </default>
+  
+  <mods>
+    <xmlfile>../unbound/mods/VisibilityItems.xml</xmlfile>
+  </mods>
+</uss_settings.xml>

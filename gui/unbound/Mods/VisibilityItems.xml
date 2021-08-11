@@ -1,0 +1,461 @@
+<UI>
+	<!-- battle_indicators -->
+	<block className="BattleIndicatorsContainer">
+		<bind name="firstEntityDH" value="'ownCarrierEntity'; CC.aircarrier;"/>
+		<bind name="watchDH" value="'activeSquadron'; ['ownCarrierEntity.aircarrier.evStateChanged']; ownCarrierEntity ? ownCarrierEntity.aircarrier.activeSquadron : -1"/>
+		<bind name="watch" value="'hasPlanes'; ownCarrierEntity != null"/>
+		<bind name="watch" value="'isOnPlane'; activeSquadron != -1"/>
+		<bind name="firstEntityDH" value="'avatar'; CC.playerAvatar"/>
+		<bind name="watchDH" value="'isAlive'; ['avatar.health.evIsAliveChanged']; avatar.health.isAlive"/>
+		<bind name="visible" value="isAlive || isOnPlane"/>
+		<styleClass value="$FullsizeAbsolute"/>
+		<style>
+			<align value="center|middle"/>
+			<hitTest value="false"/>
+		</style>
+		<block>
+			<style>
+				<width value="0"/>
+				<height value="0"/>
+			</style>
+			<block>
+				<style>
+					<position value="absolute"/>
+					<left value="250"/>
+					<bottom value="217"/>
+				</style>
+				<bind name="instance" value="'DetectIndicator'; {_isPlane: isOnPlane}"/>
+			</block>
+			<block>
+				<style>
+					<position value="absolute"/>
+					<left value="340"/>
+					<bottom value="226"/>
+				</style>
+				<bind name="instance" value="'IntuitionIndicator';  (isOnPlane == false) ? {} : null"/>
+			</block>
+			<block>
+				<style>
+					<position value="absolute"/>
+					<left value="340"/>
+					<bottom value="226"/>
+				</style>
+				<bind name="instance" value="'RLSDetectIndicator';  (isOnPlane == false) ? {} : null"/>
+			</block>
+			<block>
+				<style>
+					<position value="absolute"/>
+					<left value="-250"/>
+					<bottom value="156"/>
+				</style>
+				<bind name="instance" value="'FightersWardIndicator'; hasPlanes ? {} : null"/>
+				<bind name="alpha" value="hasPlanes &amp;&amp; isOnPlane"/>
+			</block>
+			<block>
+				<style>
+					<position value="absolute"/>
+					<left value="-340"/>
+					<bottom value="226"/>
+				</style>
+				<bind name="instance" value="'WeatherIndicator'; {}"/>
+			</block>
+		</block>
+	</block>
+	<block className="DetectIndicator">
+		<bind name="firstEntityDH" value="'bi'; CC.battleIndication"/>
+		<bind name="firstEntityDH" value="'selfAvatarEntity'; CC.playerAvatar"/>
+		<bind name="watchDH" value="'shipSpotType'; 			['bi.alertIndication.evSpottedChanged']; 		bi.alertIndication.spotType"/>
+		<bind name="watchDH" value="'shipSpotFlags'; 		['bi.alertIndication.evSpottedChanged']; 		bi.alertIndication.spotFlags"/>
+		<bind name="watchDH" value="'shipFocusedEnemies'; 	['bi.alertIndication.evFocusedEnemiesChanged']; bi.alertIndication.focusedEnemies"/>
+		<bind name="watchDH" value="'squadronSpotType'; 		['bi.alertIndication.evSquadronSpottedChanged']; 			bi.alertIndication.squadronSpotType"/>
+		<bind name="watchDH" value="'squadronSpotFlags'; 	['bi.alertIndication.evSquadronSpottedChanged']; 			bi.alertIndication.squadronSpotFlags"/>
+		<bind name="watchDH" value="'underFighterAttack'; 	['bi.alertIndication.evUnderFighterAttackStatusChanged']; 	bi.alertIndication.underFighterAttackStatus"/>
+		<bind name="watchDH" value="'underAntiAirAttack'; 	['bi.alertIndication.evUnderAntiAirAttackChanged'];			bi.alertIndication.underAntiAirAttack"/>
+		<bind name="watchDH" value="'antiAirThreatCount'; 	['bi.alertIndication.evAntiAirThreatCountChanged']; 		bi.alertIndication.antiAirThreatCount"/>
+		<bind name="watch" value="'isUnderFighterAttack'; _isPlane &amp;&amp; underFighterAttack &gt; 0"/>
+		<bind name="watch" value="'isUnderAntiAirAttack'; _isPlane &amp;&amp; underAntiAirAttack"/>
+		<bind name="watch" value="'spotType'; _isPlane ? squadronSpotType : shipSpotType"/>
+		<bind name="watch" value="'focusedEnemies'; _isPlane ? (underAntiAirAttack ? antiAirThreatCount : 0)
+											: shipFocusedEnemies"/>
+		<bind name="watch" value="'alertVisible'; (_isPlane ? squadronSpotFlags &gt; 0 : shipSpotFlags &gt; 0)"/>
+		<bind name="watch" value="'isHydrophone'; spotType == 'hydrophone'"/>
+		<bind name="var" value="{isVolley: false, volleyLifeTime: 1.0}"/>
+		<bind name="catch" value="'evSetVolley'"/>
+		<bind name="handleEventDH" value="'bi.alertIndication.evArtilleryAlert'; 'evVolley'; {}; 2"/>
+		<bind name="dispatch" value="'evVolley'; !(_isPlane) ? 'evSetVolley' : ''; {isVolley: true}"/>
+		<bind name="dispatchDelayReset" value="'evVolley'; 'evSetVolley'; {isVolley: false}; 2; volleyLifeTime"/>
+		<bind name="transition" value="alertVisible; 0.3; 	{alpha: 0, scaleX: 2, scaleY: 2};
+											{alpha: 1, scaleX: 1, scaleY: 1};
+											{alpha: 0, scaleX: 2, scaleY: 2};
+											alertVisible ? 2 : 1"/>
+		<bind name="watch" value="'iconName'; 	isUnderFighterAttack		? (underFighterAttack == 1 ? 'fighters_warning' : 'fighters_critical') :
+							 	isHit &amp;&amp; _isOnSquadron 		? 'attacked':
+							 	isUnderAntiAirAttack 		? 'antiAir' :
+							 	isVolley 					? 'volley' :
+							 	spotType 					? spotType :
+							 	iconName                    ? iconName :'ship'
+    "/>
+		<bind name="var" value="{showDuration: 4}"/>
+		<bind name="var" value="{isHit:	false}"/>
+		<bind name="handleEventDH" value="'selfAvatarEntity.vehicle.evHit'; 'evAircraftHit'"/>
+		<bind name="catch" value="'evAircraftHit'; {isHit: true}"/>
+		<bind name="dispatchDelayReset" value="'evAircraftHit'; 'evDelayedAircraftHit'; {}; 2; showDuration"/>
+		<bind name="catch" value="'evDelayedAircraftHit'; {isHit: false}"/>
+		<block>
+			<styleClass value="$MiddleVHAbsolutely"/>
+			<block>
+				<bind name="appear" value="'iconName'+varChanged; 0.2; 0; 	{scaleX: 2, scaleY: 2, left: -32, top: -32};
+															{scaleX: 1, scaleY: 1, left: 0, top: 0}; 2"/>
+				<style>
+					<align value="center"/>
+					<width value="64px"/>
+					<height value="64px"/>
+				</style>
+				<block>
+					<style>
+						<width value="32px"/>
+						<height value="32px"/>
+						<align value="center|bottom"/>
+					</style>
+					<bind name="instance" value="'VisibilityItemsClip'; {_iconName: iconName ? iconName : 'ship'}"/>
+				</block>
+				<block type="text">
+					<styleClass value="$IndicatorText"/>
+					<style>
+						<marginTop value="5px"/>
+						<textAlign value="center"/>
+						<leading value="-3"/>
+					</style>
+					<bind name="class" value="isVolley || ((underFighterAttack == 2) &amp;&amp; _isPlane) || (isHit &amp;&amp; (_isOnSquadron == true)) ? '$IndicatorTextCritical' : '$IndicatorTextWarning'"/>
+					<bind name="watch" value="'iconLabel';	isUnderFighterAttack				? 'IDS_UNDER_FIGHTERS_ATTACK' :
+							 				isUnderAntiAirAttack 				? 'IDS_UNDER_ANTI_AIR_ATTACK' :
+							 				isVolley 							? 'IDS_VOLLEY':
+							 				isHit &amp;&amp; (_isOnSquadron == true)	? 'IDS_ATTACKED' :
+											isHydrophone						? 'IDS_HYDROPHONE'
+												 								: 'IDS_DETECTED'"/>
+					<bind name="text" value="(_isOnSquadron == true) &amp;&amp; (_isPlane == false) ? iconLabel + '_AIRCARRIER' : iconLabel"/>
+				</block>
+			</block>
+		</block>
+		<block>
+			<bind name="fade" value="(focusedEnemies &gt; 0) &amp;&amp; (_isOnSquadron != true); 0.15; {alpha: 0}; {alpha: 1}; {alpha: 0}; 2"/>
+			<style>
+				<position value="absolute"/>
+				<top value="-27px"/>
+				<left value="17px"/>
+				<align value="center|middle"/>
+				<height value="0px"/>
+				<width value="0px"/>
+			</style>
+			<bind name="style" value="'top'; _isPlane || _isOnSquadron ? '-32px' : '-27px'"/>
+			<bind name="style" value="'left'; _isPlane || _isOnSquadron ? '24px' : '17px'"/>
+			<block>
+				<style>
+					<position value="absolute"/>
+				</style>
+				<bind name="fade" value="(focusedEnemies &gt; 0) &amp;&amp; (_isOnSquadron != true); 0.15; {alpha: 0, scaleX: 2, scaleY: 2}; {alpha: 1, scaleX: 1, scaleY: 1}; {alpha: 0, scaleX: 2, scaleY: 2}; 2"/>
+				<block>
+					<style>
+						<position value="absolute"/>
+						<width value="32px"/>
+						<height value="32px"/>
+						<left value="50%"/>
+						<top value="50%"/>
+						<marginLeft value="-50%"/>
+						<marginTop value="-50%"/>
+						<backgroundImage value="symbol:icon_visibility_priority"/>
+					</style>
+				</block>
+			</block>
+			<block type="text">
+				<bind name="visible" value="focusedEnemies &gt; 0"/>
+				<styleClass value="$TextDefaultBoldNM"/>
+				<styleClass value="$IndicatorTextWarning"/>
+				<style>
+					<fontSize value="18"/>
+					<marginTop value="-1px"/>
+				</style>
+				<bind name="text" value="focusedEnemies"/>
+			</block>
+		</block>
+	</block>
+	<block className="VisibilityItemsClip">
+		<style>
+			<marginTop value="-30"/>
+			<marginLeft value="-50"/>
+			<position value="absolute"/>
+		</style>
+		<bind name="child" value="_iconName; {}; {	fighters_warning: 		'IconVisibilityFightersWarning',
+									fighters_critical: 		'IconVisibilityFightersCritical',
+									antiAir:				'IconVisibilityAntiAir',
+									volley: 				'IconVisibilityVolley',
+									ship: 					'IconVisibilityShip',
+									plane: 					'IconVisibilityPlane',
+									common_xray: 			'IconVisibilityCommonXray',
+									attacked:				'IconVisibilityAircarrierAttacked',
+									rls: 					'IconVisibilityRLS',
+									sonar: 					'IconVisibilitySonar',
+									hydrophone:				'IconVisibilityHydrophone'}"/>
+	</block>
+	<block className="IconVisibilityFightersWarning">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityFightersWarning.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityFightersCritical">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityFightersCritical.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityAntiAir">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityAntiAir.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityVolley">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityVolley.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityShip">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityShip.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityPlane">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityPlane.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityAircarrierAttacked">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityAircarrierAttacked.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityRLS">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityRLS.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilitySonar">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilitySonar.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityHydrophone">
+		<style>
+			<width value="33px"/>
+			<height value="28px"/>
+			<backgroundImage value="url:../battle_hud/battle_indicators/icon_visibility_hydrophone.png"/>
+		</style>
+	</block>
+	<block className="IconVisibilityCommonXray">
+		<style>
+			<width value="60px"/>
+			<height value="60px"/>
+			<backgroundImage value="url:../VisibilityItems/IconVisibilityCommonXray.png"/>
+		</style>
+	</block>
+	<block className="IntuitionIndicator">
+		<bind name="firstEntityDH" value="'bi'; CC.battleIndication"/>
+		<bind name="watchDH" value="'intuitionActive'; ['bi.alertIndication.evIntuitionActiveChanged']; bi.alertIndication.intuitionActive"/>
+		<bind name="watchDH" value="'isInRlsZone'; ['bi.alertIndication.evIsInRlsZoneChanged']; bi.alertIndication.isInRlsZone"/>
+		<bind name="fade" value="intuitionActive &amp;&amp; !isInRlsZone; 0.15; {alpha: 0, scaleX: 2, scaleY: 2}; {alpha: 1, scaleX: 1, scaleY: 1}; {alpha: 0, scaleX: 2, scaleY: 2}; 2"/>
+		<block>
+			<style>
+				<position value="absolute"/>
+				<left value="50%"/>
+				<top value="50%"/>
+				<marginLeft value="-50%"/>
+				<marginTop value="-50%"/>
+				<align value="center"/>
+			</style>
+			<block>
+				<style>
+					<width value="32px"/>
+					<height value="32px"/>
+					<align value="center|bottom"/>
+				</style>
+				<block>
+					<style>
+						<width value="60px"/>
+						<height value="60px"/>
+						<backgroundImage value="url:../VisibilityItems/IconVisibilityAntiintuition.png"/>
+					</style>
+				</block>
+			</block>
+			<block type="text">
+				<styleClass value="$IndicatorText"/>
+				<style>
+					<marginTop value="5px"/>
+				</style>
+				<bind name="text" value="'IDS_DETECTED_BY_ENEMY_SHIP'"/>
+			</block>
+		</block>
+	</block>
+	<block className="RLSDetectIndicator">
+		<bind name="firstEntityDH" value="'bi'; CC.battleIndication"/>
+		<bind name="watchDH" value="'isInRlsZone'; ['bi.alertIndication.evIsInRlsZoneChanged']; bi.alertIndication.isInRlsZone"/>
+		<bind name="fade" value="isInRlsZone; 0.15; {alpha: 0, scaleX: 2, scaleY: 2}; {alpha: 1, scaleX: 1, scaleY: 1}; {alpha: 0, scaleX: 2, scaleY: 2}; 2"/>
+		<block>
+			<style>
+				<position value="absolute"/>
+				<left value="50%"/>
+				<top value="50%"/>
+				<marginLeft value="-50%"/>
+				<marginTop value="-50%"/>
+				<align value="center"/>
+			</style>
+			<block>
+				<style>
+					<width value="32px"/>
+					<height value="32px"/>
+					<align value="center|bottom"/>
+				</style>
+				<block>
+					<style>
+						<width value="28px"/>
+						<height value="28px"/>
+						<backgroundImage value="url:../battle_hud/battle_indicators/icon_in_rls_zone.png"/>
+					</style>
+				</block>
+			</block>
+			<block type="text">
+				<styleClass value="$IndicatorText"/>
+				<style>
+					<marginTop value="5px"/>
+				</style>
+				<bind name="text" value="'IDS_IN_RLS_ZONE'"/>
+			</block>
+		</block>
+	</block>
+	<block className="FightersWardIndicator">
+		<bind name="firstEntityDH" value="'bi'; CC.battleIndication"/>
+		<bind name="watchDH" value="'wardInsideLifeTime'; 	['bi.fightersWardIndication.evWardTimerChanged']; bi.fightersWardIndication.wardInsideLifeTime"/>
+		<bind name="var" value="{curState: 'normal'}"/>
+		<bind name="watch" value="'state'; 	wardInsideLifeTime == 0		? curState :
+							wardInsideLifeTime &lt;= 5		? 'critical' :
+						 	wardInsideLifeTime &lt;= 20	? 'warning'
+														: 'normal'"/>
+		<bind name="catch" value="'state' + varChanged; {curState: state}"/>
+		<bind name="watch" value="'iconName'; 'symbol:icon_inside_fighters_ward_' + state"/>
+		<bind name="visible" value="wardInsideLifeTime &gt; 0"/>
+		<bind name="fade" value="wardInsideLifeTime &gt; 0.2; 0.15; {alpha: 0, scaleX: 2, scaleY: 2}; {alpha: 1, scaleX: 1, scaleY: 1}; {alpha: 0, scaleX: 2, scaleY: 2}; 2"/>
+		<block>
+			<style>
+				<position value="absolute"/>
+				<left value="50%"/>
+				<top value="50%"/>
+				<marginLeft value="-50%"/>
+				<marginTop value="-50%"/>
+				<align value="center"/>
+			</style>
+			<block>
+				<style>
+					<width value="32px"/>
+					<height value="32px"/>
+					<align value="center|bottom"/>
+				</style>
+				<block>
+					<style>
+						<width value="30px"/>
+						<height value="32px"/>
+						<align value="center|middle"/>
+					</style>
+					<bind name="style" value="'backgroundImage'; iconName"/>
+				</block>
+			</block>
+			<block type="text">
+				<style>
+					<height value="20px"/>
+					<marginTop value="1px"/>
+				</style>
+				<bind name="style" value="'alpha'; wardInsideLifeTime != 0 ? 1 : 0"/>
+				<styleClass value="$IndicatorText"/>
+				<bind name="class" value="	state == 'critical'	? '$IndicatorTextCritical' :
+						 	state == 'warning'  	? '$IndicatorTextWarning'
+															: '$None'"/>
+				<bind name="text" value="countdownFormat(wardInsideLifeTime, 0, true)"/>
+			</block>
+		</block>
+	</block>
+	<block className="WeatherIndicator">
+		<bind name="firstEntityDH" value="'bi'; CC.battleIndication"/>
+		<bind name="watchDH" value="'weatherVisible';	['bi.weatherIndication.evWeatherStateChanged']; 	bi.weatherIndication.weatherState &amp;&amp; bi.weatherIndication.weatherState != 'inv'"/>
+		<bind name="watchDH" value="'weatherState'; 		['bi.weatherIndication.evWeatherStateChanged']; 	bi.weatherIndication.weatherState"/>
+		<bind name="watchDH" value="'weatherTimeLeft'; 	['bi.weatherIndication.evWeatherTimeLeftChanged']; 	bi.weatherIndication.weatherTimeLeft"/>
+		<bind name="firstEntityDH" value="'cameraEntity'; CC.camera"/>
+		<bind name="watchDH" value="'visibilityRange'; 	['cameraEntity.camera.evVisibilityRangeChanged']; 	cameraEntity.camera.visibilityRange"/>
+		<bind name="firstEntityDH" value="'selfVehicleEntity'; CC.selfVehicle"/>
+		<bind name="watchDH" value="'depthState'; ['selfVehicleEntity.submarine.evDepthIndexChanged']; 	selfVehicleEntity.submarine.depthIndex"/>
+		<bind name="watch" value="'isDepthStateUnderWater'; depthState != null	? depthState &gt; SC.Battle.DEPTH_STATE.PERISCOPE
+																: false"/>
+		<bind name="fade" value="weatherVisible &amp;&amp; !isDepthStateUnderWater; 0.15; {alpha: 0, scaleX: 2, scaleY: 2}; {alpha: 1, scaleX: 1, scaleY: 1}; {alpha: 0, scaleX: 2, scaleY: 2}; 2"/>
+		<bind name="watch" value="'cycloneInProgress'; weatherState == 'cyclone' || weatherState == 'cyclone_end'"/>
+		<bind name="changeDispatch" value="weatherState; 'evCycloneStart'; {}; 2; 'cyclone_start'"/>
+		<bind name="changeDispatch" value="weatherState; 'evCycloneEnd'; {}; 2; 'cyclone_end'"/>
+		<block>
+			<style>
+				<align value="center"/>
+			</style>
+			<styleClass value="$MiddleVHAbsolutely"/>
+			<bind name="style" value="'alpha'; weatherState == 'cyclone_start' ? 0.7 : 1"/>
+			<block>
+				<style>
+					<width value="32px"/>
+					<height value="32px"/>
+					<align value="center|bottom"/>
+				</style>
+				<block>
+					<style>
+						<width value="28px"/>
+						<height value="23px"/>
+						<backgroundImage value="symbol:icon_cyclone_active"/>
+					</style>
+					<bind name="style" value="'backgroundImage'; 'symbol:icon_cyclone_' + (weatherState == 'cyclone_start' ? 'inactive' : 'active')"/>
+				</block>
+			</block>
+			<block type="text">
+				<styleClass value="$IndicatorText"/>
+				<style>
+					<marginTop value="5px"/>
+					<width value="100px"/>
+					<textAlign value="center"/>
+				</style>
+				<bind name="appear" value="'evCycloneStart'; 0.15; 0; {alpha: 0, top: 10}; {alpha: 1, top: 0}"/>
+				<bind name="appear" value="'evCycloneEnd'; 0.15; 0; {alpha: 0, top: 10}; {alpha: 1, top: 0}"/>
+				<bind name="text" value="weatherState == 'cyclone' ? toUpperCase(tr('IDS_CYCLONE')) : countdownFormat(weatherTimeLeft, 0, true)"/>
+			</block>
+			<block type="text">
+				<bind name="fade" value="cycloneInProgress; 0.15; {alpha: 0, top: 10}; {alpha: 1, top: 0}"/>
+				<styleClass value="$IndicatorText"/>
+				<style>
+					<position value="absolute"/>
+					<width value="100px"/>
+					<textAlign value="center"/>
+					<top value="-5px"/>
+				</style>
+				<bind name="text" value="visibilityRange + tr('IDS_KILOMETER_SPACE')"/>
+			</block>
+		</block>
+	</block>
+	
+</UI>
