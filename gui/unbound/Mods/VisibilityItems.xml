@@ -64,7 +64,7 @@
 	<block className="DetectIndicator">
 		<bind name="firstEntityDH" value="'bi'; CC.battleIndication"/>
 		<bind name="firstEntityDH" value="'selfAvatarEntity'; CC.playerAvatar"/>
-		<bind name="watchDH" value="'shipSpotType'; 			['bi.alertIndication.evSpottedChanged']; 		bi.alertIndication.spotType"/>
+		<bind name="watchDH" value="'shipSpotFlags'; 		['selfAvatarEntity.vehicle.evVisibilityFlagsChanged']; 	selfAvatarEntity.vehicle.visibilityFlags"/>
 		<bind name="watchDH" value="'shipSpotFlags'; 		['bi.alertIndication.evSpottedChanged']; 		bi.alertIndication.spotFlags"/>
 		<bind name="watchDH" value="'shipFocusedEnemies'; 	['bi.alertIndication.evFocusedEnemiesChanged']; bi.alertIndication.focusedEnemies"/>
 		<bind name="watchDH" value="'squadronSpotType'; 		['bi.alertIndication.evSquadronSpottedChanged']; 			bi.alertIndication.squadronSpotType"/>
