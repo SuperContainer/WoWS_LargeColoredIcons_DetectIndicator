@@ -1,4 +1,5 @@
-<UI>
+<ui>
+
 	<!-- battle_indicators -->
 	<block className="BattleIndicatorsContainer">
 		<bind name="firstEntityDH" value="'ownCarrierEntity'; CC.aircarrier;"/>
@@ -64,8 +65,8 @@
 	<block className="DetectIndicator">
 		<bind name="firstEntityDH" value="'bi'; CC.battleIndication"/>
 		<bind name="firstEntityDH" value="'selfAvatarEntity'; CC.playerAvatar"/>
+		<bind name="watchDH" value="'shipSpotType'; 			['bi.alertIndication.evSpottedChanged']; 		bi.alertIndication.spotType"/>
 		<bind name="watchDH" value="'shipSpotFlags'; 		['selfAvatarEntity.vehicle.evVisibilityFlagsChanged']; 	selfAvatarEntity.vehicle.visibilityFlags"/>
-		<bind name="watchDH" value="'shipSpotFlags'; 		['bi.alertIndication.evSpottedChanged']; 		bi.alertIndication.spotFlags"/>
 		<bind name="watchDH" value="'shipFocusedEnemies'; 	['bi.alertIndication.evFocusedEnemiesChanged']; bi.alertIndication.focusedEnemies"/>
 		<bind name="watchDH" value="'squadronSpotType'; 		['bi.alertIndication.evSquadronSpottedChanged']; 			bi.alertIndication.squadronSpotType"/>
 		<bind name="watchDH" value="'squadronSpotFlags'; 	['bi.alertIndication.evSquadronSpottedChanged']; 			bi.alertIndication.squadronSpotFlags"/>
@@ -402,13 +403,13 @@
 		<bind name="watchDH" value="'weatherVisible';	['bi.weatherIndication.evWeatherStateChanged']; 	bi.weatherIndication.weatherState &amp;&amp; bi.weatherIndication.weatherState != 'inv'"/>
 		<bind name="watchDH" value="'weatherState'; 		['bi.weatherIndication.evWeatherStateChanged']; 	bi.weatherIndication.weatherState"/>
 		<bind name="watchDH" value="'weatherTimeLeft'; 	['bi.weatherIndication.evWeatherTimeLeftChanged']; 	bi.weatherIndication.weatherTimeLeft"/>
-		<bind name="firstEntityDH" value="'cameraEntity'; CC.camera"/>
-		<bind name="watchDH" value="'visibilityRange'; 	['cameraEntity.camera.evVisibilityRangeChanged']; 	cameraEntity.camera.visibilityRange"/>
-		<bind name="firstEntityDH" value="'selfVehicleEntity'; CC.selfVehicle"/>
-		<bind name="watchDH" value="'depthState'; ['selfVehicleEntity.submarine.evDepthIndexChanged']; 	selfVehicleEntity.submarine.depthIndex"/>
-		<bind name="watch" value="'isDepthStateUnderWater'; depthState != null	? depthState &gt; SC.Battle.DEPTH_STATE.PERISCOPE
-																: false"/>
-		<bind name="fade" value="weatherVisible &amp;&amp; !isDepthStateUnderWater; 0.15; {alpha: 0, scaleX: 2, scaleY: 2}; {alpha: 1, scaleX: 1, scaleY: 1}; {alpha: 0, scaleX: 2, scaleY: 2}; 2"/>
+		<bind name="firstEntityDH" value="'ownCarrierEntity'; CC.aircarrier"/>
+		<bind name="watchDH" value="'activeSquadronId';	['ownCarrierEntity.aircarrier.evStateChanged']; ownCarrierEntity ? ownCarrierEntity.aircarrier.activeSquadron : -1"/>
+		<bind name="watch" value="'stateOwnerId'; activeSquadronId != -1 ? 0 : -1"/>
+		<bind name="firstEntityDH" value="'playerAvatarEntity'; CC.playerAvatar"/>
+		<bind name="primaryEntityDH" value="'cycloneStateEntity'; CC.state; 'global_cyclone' + '_' + str(playerAvatarEntity.id) + '_' + str(stateOwnerId)"/>
+		<bind name="watchDH" value="'visibilityRange'; 	['cycloneStateEntity.attributes.evChanged']; 	cycloneStateEntity.attributes.modifiers['maxShipVisionDistance']"/>
+		<bind name="fade" value="weatherVisible; 0.15; {alpha: 0, scaleX: 2, scaleY: 2}; {alpha: 1, scaleX: 1, scaleY: 1}; {alpha: 0, scaleX: 2, scaleY: 2}; 2"/>
 		<bind name="watch" value="'cycloneInProgress'; weatherState == 'cyclone' || weatherState == 'cyclone_end'"/>
 		<bind name="changeDispatch" value="weatherState; 'evCycloneStart'; {}; 2; 'cyclone_start'"/>
 		<bind name="changeDispatch" value="weatherState; 'evCycloneEnd'; {}; 2; 'cyclone_end'"/>
@@ -453,9 +454,9 @@
 					<textAlign value="center"/>
 					<top value="-5px"/>
 				</style>
-				<bind name="text" value="visibilityRange + tr('IDS_KILOMETER_SPACE')"/>
+				<bind name="text" value="format(visibilityRange, 1) + tr('IDS_KILOMETER_SPACE')"/>
 			</block>
 		</block>
 	</block>
-	
-</UI>
+
+</ui>
