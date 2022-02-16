@@ -88,7 +88,7 @@
 		<bind name="transition" value="alertVisible; 0.3; 	{alpha: 0, scaleX: 2, scaleY: 2};
 											{alpha: 1, scaleX: 1, scaleY: 1};
 											{alpha: 0, scaleX: 2, scaleY: 2};
-											alertVisible ? 2 : 1"/>
+											alertVisible ? SC.Common.EASING_FUNCTIONS.IN_QUAD : SC.Common.EASING_FUNCTIONS.OUT_QUAD"/>
 		<bind name="watch" value="'iconName'; 	isUnderFighterAttack		? (underFighterAttack == 1 ? 'fighters_warning' : 'fighters_critical') :
 							 	isHit &amp;&amp; _isOnSquadron 		? 'attacked':
 							 	isUnderAntiAirAttack 		? 'antiAir' :
@@ -106,7 +106,7 @@
 			<styleClass value="$MiddleVHAbsolutely"/>
 			<block>
 				<bind name="appear" value="'iconName'+varChanged; 0.2; 0; 	{scaleX: 2, scaleY: 2, left: -32, top: -32};
-															{scaleX: 1, scaleY: 1, left: 0, top: 0}; 2"/>
+															{scaleX: 1, scaleY: 1, left: 0, top: 0}; SC.Common.EASING_FUNCTIONS.IN_QUAD"/>
 				<style>
 					<align value="center"/>
 					<width value="64px"/>
